@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    {{ arr }}
+  </div>
+  <script src="/dist/umd/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          arr: [[0, 0, 0], 2, 3]
+        }
+      }
+    });
+    vm.arr.push(4);
+    vm.arr.push(5);
+    vm.arr.push(6);
+    console.log('innerHTML-----------------',vm.$el.innerHTML);
+
+    // vm.$nextTick(() => {
+    //   console.log(vm.$el.innerHTML);
+    // });
+
+    // setTimeout(() => {
+    //   vm.arr[0].push(4, 5, 6);
+    // }, 1000);
+  </script>
+  <script>
+    // const vm = new Vue({
+    //   el: '#app',
+    //   data() {
+    //     return {
+    //       name: 234,
+    //       age: 16,
+    //       link: {
+    //         address: 'SZ',
+    //         phone: '110'
+    //       }
+    //     }
+    //   },
+    //   beforeCreate() {
+    //     console.log('use');
+    //   },
+    //   created() {
+    //     console.log('created', this.name);
+    //   },
+    //   beforeMount() {
+    //     console.log('beforeMount', this.name);
+    //   },
+    //   mounted() {
+    //     console.log('mounted', this.name);
+    //   },
+    //   methods: {
+
+    //   },
+    //   computed: {
+
+    //   },
+    //   methods: {
+
+    //   },
+    //   watch: {
+
+    //   }
+    // });
+
+    // setTimeout(() => {
+    //   vm.age = 100;
+    // }, 3000);
+  </script>
+</body>
+
+</html>
