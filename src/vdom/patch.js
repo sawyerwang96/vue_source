@@ -21,6 +21,38 @@ export function patch(oldVnode, vnode) {
 
     // 将渲染好的结果返回
     return el;
+  } else {
+    // diff算法特点：平级对比 我们正常操作dom，很少设计到父变成子或者子变成父 O(n^3)
+    if (oldVnode.tag !== vnode.tag) {
+      oldVnode.el.parentNode.replaceChild(createElm(vnode), oldVnode.el);
+    }
+
+    if (!oldVnode.tag) { // 文本没有tag
+      if (oldVnode.text !== vnode.text) {
+        oldVnode.text = vnode.text; // 替换文本
+      }
+    }
+
+    // 标签一致且不是文本(对比属性是否一致)
+    // 使用旧的el，更新属性
+    let el = vnode.el = oldVnode.el;
+    updateProperties(vnode, oldVnode.data);
+
+    let oldChildren = oldVnode.children || [];
+    let newChildren = vnode.children || [];
+
+    if (oldChildren.length && newChildren.length) {
+      // 新旧都有子节点
+      updateChildren(el, oldChildren, newChildren);
+    } else if (newChildren.length) {
+      // 新的有子节点
+      for (let i = 0 ; i < newChildren.length; i++) {
+        let child = newChildren[i];
+        el.appendChild(createElm(child));
+      }
+    } else if (oldChildren.length) {
+      el.innerHTML = '';
+    }
   }
 }
 
@@ -29,7 +61,7 @@ export function patch(oldVnode, vnode) {
  * @param {*} vnode 
  * @returns 
  */
-function createElm(vnode) {
+export function createElm(vnode) {
   console.log('createElm', vnode);
   let { tag, children, key, data, text } = vnode;
 
@@ -75,10 +107,62 @@ function createComponent(vnode) {
   }
 }
 
-function updateProperties(vnode) {
-  // let newProps = vnode.data || {};
-  let newProps = vnode.data; // 创建vnode的是由有给data默认值
+function updateChildren(parent, oldChildren, newChildren) {
+  // 采用双指针
+
+  let oldStartIndex = 0;
+  let oldStartVnode = oldChildren[oldStartIndex];
+  let oldEndIndex = oldChildren.length - 1;
+  let oldEndVnode = oldChildren[oldEndIndex];
+
+  let newStartIndex = 0;
+  let newStartVnode = newChildren[newStartIndex];
+  let newEndIndex = newChildren.length - 1;
+  let newEndVnode = newChildren[newEndIndex];
+
+  // 在对比过程中，新老虚拟就节点只要有一方循环完毕就结束了（指针重合）
+  while(oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
+    if (isSameVnode(oldStartVnode, newStartVnode)) {
+      // 如果同一个节点 就需要对比这个元素的属性
+      patch(oldStartVnode, newStartVnode);
+      oldStartVnode = oldChildren[++oldStartIndex];
+      newStartVnode = newChildren[++newStartIndex];
+    }
+  }
+
+  if (newStartIndex <= newEndIndex) {
+    for (let i = newStartIndex; i < newEndIndex; i++) {
+      // 新增子节点
+      parent.appendChild(createElm(newChildren[i]));
+    }
+  }
+
+
+}
+
+function isSameVnode(oldVnode, newVnode) {
+  return (oldVnode.tag === newVnode.tag) || (oldVnode.key === newVnode.key);
+}
+
+function updateProperties(vnode, oldProps = {}) {
+  let newProps = vnode.data || {}; // 创建vnode的是由有给data默认值
   let el = vnode.el;
+
+  let newStyle = newProps.style || {};
+  let oldStyle = oldProps.style || {};
+
+  for (let key in oldStyle) {
+    if (!newStyle[key]) {
+      el.style[key] = '';
+    }
+  }
+
+  // 旧的属性中有，新的属性中没有，将旧的属性从真实dom中删除
+  for (let key in oldProps) {
+    if (!newProps) {
+      el.removeAttribute(key);
+    }
+  }
 
   for (let key in newProps) {
     if (key === 'style') {

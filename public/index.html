@@ -9,61 +9,23 @@
 </head>
 
 <body>
-  <div id="app">
+  <!-- <div id="app">
     <div>123456</div>
-    <my-component></my-component>
-    <my-component1></my-component1>
-  </div>
+  </div> -->
   <script src="/dist/umd/vue.js"></script>
   <script>
-    // 内部会调用 Vue.extend 返回一个组件的构造函数 通过new 构造函数产生实例
-    Vue.component('my-component', {
-      template: '<div>hello 你好</div>'
-    });
-    // Vue.component('my-component', {
-    //   template: '<div>my-component1</div>'
+    // const vm = new Vue({
+    //   el: '#app',
+    //   data() {
+    //     return {
+    //       name: 'sawyer'
+    //     }
+    //   }
     // });
 
-    const vm = new Vue({
-      el: '#app',
-      data() {
-        return {
-          name: 'sawyer'
-        }
-      },
-      components: {
-        'my-component1': {
-          template: '<div>你好<my-component2></my-component2></div>',
-          components: {
-            'my-component2': {
-              template: '<div>你好</div>'
-            }
-          }
-        }
-      }
-    });
-
-    // 组件渲染的时候 会调用当前组件对应的构造函数，产生一个实例
-    // 可以new 这个类 每个组件都会new一下
-
-    // 每个组件在使用的时都会调用Vue.extend方法 创建一个构造函数
-    // 实例化子组件的时候 会将当前选项和用户定义选项合并 mergeOptions
-    // 通过创建实例 内部会调用子类的_init() 内部会再创建一个渲染watcher 将渲染后的结果放到$vm.el上
-    // vm.$el--->组件的渲染结果
-
-
-    // 局部组件和全局组件的区别
-
-
-
-    // new Vue.extend ==> _init()
-
-
-    // 异步组件的原理(特点) 先渲染空，等会加载后再重新渲染
-
-
-    // 模板解析取值的时候就会进行依赖收集
-    // _render.call(vm);
+    // 每次渲染的时候 进行对比 如果可以复用的元素 就复用以前的元素
+    // dom-diff  => vnode虚拟节点(属性非常少) tag data key children
+    // 对比的是 虚拟节点 如果标签一致 就复用 然后去除或新增属性
   </script>
 </body>
 
