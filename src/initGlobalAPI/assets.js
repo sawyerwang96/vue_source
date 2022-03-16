@@ -10,14 +10,15 @@ export default function initAssetRegisters(Vue) {
 
         // 子组件也可能有Vue.component方法
         definition = this.options._base.extend(definition);
-
+        console.log(this, 'wsy~~~~~~');
+        // this.options --> Vue.options  保证永远指向父类
+        // _base ---> function Vue
       } else if (type === 'filter') {
-
       } else if (type === 'directive') {
-
       }
 
-      Vue.options[type + 's'][id] = definition; // 放到了全局的options对象上
+      // 放到了全局的options对象上
+      Vue.options[type + 's'][id] = definition;
     }
   });
 }

@@ -10,7 +10,8 @@ export function initGlobalAPI(Vue) {
   initMixin(Vue);
 
 
-  // 初始化的全局过滤器、指令、组件
+  // 初始化的全局过滤器、指令、组件 
+  // Vue.options = { components: {}, directives: {}, filter: {} }
   ASSETS_TYPE.forEach(type => {
     Vue.options[type + 's'] = {};
   });

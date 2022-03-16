@@ -65,7 +65,7 @@ function createComponent(vnode) {
   console.log(i);
 
   if ((i = i.hook) && (i = i.init)) {
-    console.log(i);
+    console.log(i); // 调用component的init方法
     i(vnode);
   }
 

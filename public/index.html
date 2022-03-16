@@ -10,14 +10,16 @@
 
 <body>
   <div id="app">
-    <my-component>123</my-component>
+    <div>123456</div>
+    <my-component></my-component>
+    <my-component1></my-component1>
   </div>
   <script src="/dist/umd/vue.js"></script>
   <script>
     // 内部会调用 Vue.extend 返回一个组件的构造函数 通过new 构造函数产生实例
-    // Vue.component('my-component', {
-    //   template: '<div>hello 你好</div>'
-    // });
+    Vue.component('my-component', {
+      template: '<div>hello 你好</div>'
+    });
     // Vue.component('my-component', {
     //   template: '<div>my-component1</div>'
     // });
@@ -30,8 +32,13 @@
         }
       },
       components: {
-        'my-component': {
-          template: '<div>你好</div>'
+        'my-component1': {
+          template: '<div>你好<my-component2></my-component2></div>',
+          components: {
+            'my-component2': {
+              template: '<div>你好</div>'
+            }
+          }
         }
       }
     });

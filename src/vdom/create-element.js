@@ -23,7 +23,9 @@ export function createElement(vm, tag, data = {}, ...children) {
 }
 
 function createComponent(vm, tag, data, key, children, Ctor) {
-  if (isObject(Ctor)) {
+  // 只用使用Vue.component注册的全局组件才使用了extend
+  // 注册的局部组件一开始并没有使用extend生成构造函数
+  if (isObject(Ctor)) { // 注册的是局部组件
     Ctor = vm.$options._base.extend(Ctor);
   }
 
@@ -39,10 +41,13 @@ function createComponent(vm, tag, data, key, children, Ctor) {
       // _update ---> vm.$el = patch(vm.$el, vnode);
       child.$mount(); // 组件的挂载 vm.$el
       // vm.$el就会空的
+      // mountComponent() ---> new Watcher()
+      // 每个组件都有一个对应的watcher
     }
   }
 
   // $vnode--->当前这个组件的vnode 占位符vnode
+  // children代表插槽
   return vnode(`vue-component-${Ctor.cid}-${tag}`, data, key, undefined, { Ctor, children });
 }
 

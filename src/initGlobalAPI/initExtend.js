@@ -7,12 +7,13 @@ export default function initExtend(Vue) {
   Vue.extend = function(extendOptions) {
     console.log('------------extendOptions-------------', extendOptions);
     const Sub = function VueComponent(options) {
+      console.log(this);
       this._init(options);
     };
 
-    console.log('extend------this', this);
+    console.log('extend------this', this); // Vue.extend
     Sub.cid = cid++;
-    Sub.prototype = Object.create(this.prototype);
+    Sub.prototype = Object.create(this.prototype); // Vue.prototype
     Sub.prototype.constructor = Sub;
 
     // this.options--->父类的options

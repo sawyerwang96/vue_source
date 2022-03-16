@@ -71,7 +71,12 @@ export function proxy(vm, source, key) {
   })
 }
 
-
+/**
+ * 组件合并策略
+ * @param {*} parentVal 
+ * @param {*} childVal 
+ * @returns 
+ */
 function mergeAssets(parentVal, childVal) {
   const res = Object.create(parentVal); // res.__proto__ === parentVal
   
@@ -84,6 +89,7 @@ function mergeAssets(parentVal, childVal) {
   return res;
 }
 strats.components = mergeAssets;
+
 
 export function mergeOptions(parent, child) {
   const options = {};
