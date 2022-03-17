@@ -9,19 +9,27 @@
 </head>
 
 <body>
-  <!-- <div id="app">
+  <div id="app">
     <div>123456</div>
-  </div> -->
+    <div>{{ name }}</div>
+  </div>
   <script src="/dist/umd/vue.js"></script>
   <script>
-    // const vm = new Vue({
-    //   el: '#app',
-    //   data() {
-    //     return {
-    //       name: 'sawyer'
-    //     }
-    //   }
-    // });
+    // $vnode 内部根据组件标签创建的虚拟节点 placeholder占位符
+    // _vnode 组件对应的渲染的虚拟节点 代表真实的组件的渲染的虚拟节点
+    // this._vnode.parent === this.$vnode
+    const vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          name: 'sawyer'
+        }
+      }
+    });
+
+    setTimeout(() => {
+      vm.name = 'wsy';
+    }, 3000);
 
     // 每次渲染的时候 进行对比 如果可以复用的元素 就复用以前的元素
     // dom-diff  => vnode虚拟节点(属性非常少) tag data key children

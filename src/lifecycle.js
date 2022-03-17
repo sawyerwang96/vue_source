@@ -4,7 +4,15 @@ export function lifecycleMixin(Vue) {
   Vue.prototype._update = function (vnode) {
     // 通过虚拟节点 渲染出真实dom
     const vm = this;
-    vm.$el = patch(vm.$el, vnode); // 虚拟节点创建出真实节点 替换掉 真实的$el
+    // 保存上一次渲染的虚拟接节点 为了实现对比效果 第一次_vnode为undefined
+    const prevVnode = vnode._vnode; // 组件的_vnode 对应的就是这个组件本身的渲染内容
+    vnode._vnode = vnode;
+
+    if (!prevVnode) {
+      vm.$el = patch(vm.$el, vnode); // 虚拟节点创建出真实节点 替换掉 真实的$el
+    } else {
+      vm.$el = patch(prevVnode, vnode);
+    }
   }
 }
 
