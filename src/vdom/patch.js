@@ -135,7 +135,7 @@ function updateChildren(parent, oldChildren, newChildren) {
   while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
     if (!oldStartVnode) {
       // 在旧节点start指针向后移动的过程中可能会碰到undefined（暴力对比中会置空）
-      oldStartVnode = oldChildren[++oldStartVnode];
+      oldStartVnode = oldChildren[++oldStartIndex];
     } else if (!oldEndVnode) {
       oldEndVnode = oldChildren[--oldEndIndex];
     } else if (isSameVnode(oldStartVnode, newStartVnode)) {
@@ -182,11 +182,11 @@ function updateChildren(parent, oldChildren, newChildren) {
     for (let i = newStartIndex; i < newEndIndex; i++) {
       // 新增子节点 有可能在向后插入 也有可能向前插入
       let el = newChildren[newChildren + 1] == null ? null : newChildren[newEndIndex + 1].el;
-      parent.insertBefore(createEle(newChildren[i]), el); // 最前面插入 或者 最后面插入
+      parent.insertBefore(createElm(newChildren[i]), el); // 最前面插入 或者 最后面插入
       // if (flag == null) {
-      //   parent.insertBefore(createEle(newChildren[i]), null);
+      //   parent.insertBefore(createElm(newChildren[i]), null);
       // } else {
-      //   parent.insertBefore(createEle(newChildren[i]), flag);
+      //   parent.insertBefore(createElm(newChildren[i]), flag);
       // }
       // parent.appendChild(createElm(newChildren[i]));
     }
