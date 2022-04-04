@@ -1,6 +1,7 @@
 import { initMixin } from './init.js';
 import { renderMixin } from './render.js'
 import { lifecycleMixin } from './lifecycle.js';
+import { stateMixin } from './state.js'
 import { initGlobalAPI } from './initGlobalAPI/index.js';
 import { compileToFunction } from './compiler/index.js';
 import { patch, createElm } from './vdom/patch.js';
@@ -16,6 +17,8 @@ function Vue(options) {
 initMixin(Vue); // 给Vue原型添加一个_init方法
 renderMixin(Vue); // _render 得到虚拟dom
 lifecycleMixin(Vue); // _update 渲染更新都需要这个方法
+
+stateMixin(Vue)
 
 initGlobalAPI(Vue); // 初始化全局API
 

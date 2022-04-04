@@ -1,6 +1,6 @@
 import { observe } from './observer/index.js';
-import { proxy } from './util/index.js';
-
+import { isObject, proxy } from './util/index.js';
+import Watcher from './observer/watcher.js';
 
 export function initState (vm) {
   const opts = vm.$options;
@@ -23,10 +23,8 @@ export function initState (vm) {
   }
 
   if (opts.watch) {
-    initWatch(vm);
+    initWatch(vm, opts.watch);
   }
-
-
 }
 
 function initProps() {}
@@ -51,4 +49,47 @@ function initData(vm) {
 
 function initComputed() {}
 
-function initWatch() {}
+function initWatch(vm, watch) {
+  // watch的原理是通过 Watcher
+  for (let key in watche) {
+    // 获取key对应的值
+    const handler = watch[key];
+
+    if (Array.isArray(handler)) {
+      // 用户传递的是数组，循环数组依次执行创建
+      for (let i = 0; i < handler.length; i++) {
+        createWatcher(vm, key, handler[i]);
+      }
+    } else {
+      // 单纯的key value
+      createWatcher(vm, key, handler);
+    }
+  }
+}
+
+
+function createWatcher(vm, key, handler, options) {
+  if (isObject(handler)) {
+    options = handler;
+    handler = handler.handler;
+  }
+
+  if (typeof handler === 'string') {
+    // 获取methods中的方法替换字符串的handler
+    handler = vm.$options.methods[handler]
+  }
+
+  return vm.$watch(key, handler, option)
+}
+
+export function stateMixin(Vue) {
+  Vue.prototype.$watch = function (exprOrFn, cb, options = {}) {
+    const vm = this;
+
+    // 用户watcher 用户用的
+    // 渲染watcher 渲染用的（new Watcher传递的第四个参数为true，代表是渲染watcher）
+    options.user = true;
+    new Watcher(vm, exprOrFn, cb, options);
+
+  }
+}
