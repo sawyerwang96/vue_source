@@ -10,7 +10,8 @@ class Watcher {
     this.user = options.user; // 标识watcher的状态
     this.sync = option.sync; // 用户watcher是否是同步执行(sync: true)
     this.id = id++; // wathcer的表标识
-
+    this.lazy = options.lazy; // 计算属性标识
+    this.dirty = this.lazy; // 是否有缓存
     if (typeof exprOrFn === 'function') {
       this.getter = exprOrFn; // 将内部传过来的updateComponent 放到getter属性上
     } else {
@@ -29,7 +30,7 @@ class Watcher {
     this.depsId = new Set();
     this.deps = [];
 
-    this.value = this.get(); // 调用get方法会让渲染watcher执行(保存当前的值)
+    this.value = this.lazy ? undefined : this.get(); // 调用get方法会让渲染watcher执行(保存当前的值)
   };
 
   get() {
@@ -42,6 +43,9 @@ class Watcher {
   update() {
     if (this.sync) {
       this.run();
+    } else if (this.lazy) {
+      // 计算属性依赖的值发生了变化
+      this.dirty = true;
     } else {
       // 等待着 一起更新 因为每次调用update的时候 都放入了watcher
       queueWatcher(this);
@@ -70,6 +74,11 @@ class Watcher {
       this.deps.push(dep);
       dep.addSub(this); // 将watcher加入到dep中
     }
+  }
+
+  evaluate() {
+    this.value = this.get();
+    this.dirty = false;
   }
 }
 

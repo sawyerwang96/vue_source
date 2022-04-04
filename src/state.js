@@ -47,7 +47,60 @@ function initData(vm) {
   observe(data);
 }
 
-function initComputed() {}
+/**
+ * 内部原理是通过watcher来实现的
+ * @param {*} vm 
+ * @param {*} computed 
+ */
+function initComputed(vm, computed) {
+  // _computedWatchers 存放着所有的计算属性对应的watcher
+  const watchers = vm._computedWatchers = {};
+
+  for (let key in computed) {
+    const userDef = computed[key]; // 获取用户定义的computed（可能是函数，也可能是对象）
+    const getter = 'function' === typeof userDef ? userDef : userDef.get;
+
+    // 获得getter函数
+    // lazy: true表示计算属性（Watcher内部会根据lazy属性判断是否立即执行watcher）
+    watchers[key] = new Watcher(vm, getter, () => {}, { lazy: true });
+
+    // 计算属性可以直接通过vm来进行取值，所以将属性定义到实例
+    defineComputed(vm, key, userDef);
+  }
+}
+
+const sharePropertyDefinition = {
+  enumerable: true,
+  configurable: true,
+  get: () => {}
+};
+
+// 将属性定义到vm（vue实例上）
+function defineComputed(target, key, userDef) {
+  // 需要添加缓存效果
+  if ('function' === typeof userDef) {
+    sharePropertyDefinition.get = createComputedGetter(key);
+  } else {
+    sharePropertyDefinition.get = createComputedGetter(key);
+    sharePropertyDefinition.set = userDef.set || (() => {})
+  }
+  Object.defineProperty(target, key, sharePropertyDefinition)
+}
+
+function createComputedGetter(key) {
+  return function() { // 通过watcher添加缓存
+    // this为当前Vue实例
+    // _computedWatchers 存放着所有的计算属性对应的watcher(initComputed)
+    let watcher = this._computedWatchers[key];
+
+    if (watcher.dirty) { // 默认第一次dirty取值为true，就调用用户的方法
+      // 调用用户的方法
+      watcher.evaluate(); // --> get --> pushTarget --> 调用用户定义的方法(方法中会对数据进行取值)
+    }
+
+    return watcher.value;
+  }
+}
 
 function initWatch(vm, watch) {
   // watch的原理是通过 Watcher
